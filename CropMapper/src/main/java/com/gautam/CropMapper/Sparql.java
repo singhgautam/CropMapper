@@ -4,15 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class Sparql {
 
@@ -37,13 +33,15 @@ public class Sparql {
 	
 	Map<String, String> predicateToSubjectObject(String predicateURI){
 		Map<String, String> thisMap = new HashMap<String, String>();
-		String qString = 						
-				"SELECT ?S ?O "+
+		String qString = 
+				//PREFIX+
+				"SELECT DISTINCT ?S ?O "+
 				"WHERE "+
-				"{"+
+				"{ "+
 				"?S <"+predicateURI+"> ?O "+
-				"}";
-		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, qString);
+				"} ";
+		Query q = QueryFactory.create(qString);
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q);
 		ResultSet qResults = qExecution.execSelect();
 		while(qResults.hasNext()){
 			QuerySolution thisRow = qResults.next();
@@ -51,6 +49,7 @@ public class Sparql {
 			String O = thisRow.get("O").toString();
 			thisMap.put(S, O);
 		}
+		qExecution.close();
 		return thisMap;
 	}
 	
