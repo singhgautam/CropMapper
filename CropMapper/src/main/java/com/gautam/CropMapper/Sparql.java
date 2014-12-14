@@ -1,5 +1,8 @@
 package com.gautam.CropMapper;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -26,7 +29,30 @@ public class Sparql {
 		"PREFIX dbpedia: <http://dbpedia.org/> " +
 		"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> ";
 	
+	String ENDPOINT;
 	
+	Sparql(String endpoint){
+		ENDPOINT = endpoint;
+	}
+	
+	Map<String, String> predicateToSubjectObject(String predicateURI){
+		Map<String, String> thisMap = new HashMap<String, String>();
+		String qString = 						
+				"SELECT ?S ?O "+
+				"WHERE "+
+				"{"+
+				"?S <"+predicateURI+"> ?O "+
+				"}";
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, qString);
+		ResultSet qResults = qExecution.execSelect();
+		while(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			String S = thisRow.get("S").toString();
+			String O = thisRow.get("O").toString();
+			thisMap.put(S, O);
+		}
+		return thisMap;
+	}
 	
 }
 
