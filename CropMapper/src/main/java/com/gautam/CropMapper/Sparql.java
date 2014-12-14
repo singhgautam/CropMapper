@@ -1,6 +1,9 @@
 package com.gautam.CropMapper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import com.hp.hpl.jena.query.Query;
@@ -34,13 +37,12 @@ public class Sparql {
 	Map<String, String> predicateToSubjectObject(String predicateURI){
 		Map<String, String> thisMap = new HashMap<String, String>();
 		String qString = 
-				//PREFIX+
 				"SELECT DISTINCT ?S ?O "+
 				"WHERE "+
 				"{ "+
 				"?S <"+predicateURI+"> ?O "+
 				"} ";
-		Query q = QueryFactory.create(qString);
+		Query q = QueryFactory.create(PREFIX+qString);
 		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q);
 		ResultSet qResults = qExecution.execSelect();
 		while(qResults.hasNext()){
@@ -53,5 +55,43 @@ public class Sparql {
 		return thisMap;
 	}
 	
+	List<String> getClassFor(String entity){
+		String qString = 
+				PREFIX+
+				"SELECT DISTINCT ?C "+
+				"WHERE "+
+				"{ "+
+				"<"+entity+"> rdf:type ?C"+
+				"} ";
+		Query q = QueryFactory.create(PREFIX+qString);
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q);
+		ResultSet qResults = qExecution.execSelect();
+		List<String> classList = new ArrayList<String>();
+		while(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			String C = thisRow.get("C").toString();
+			classList.add(C);
+		}
+		qExecution.close();
+		return classList;
+	}
+	
+	List<String> getAllClassFor(String entity){
+		LinkedList<String> classList = new LinkedList<String>(); 
+		List<String> finalList = new ArrayList<String>();
+		classList.addAll(getClassFor(entity));
+		finalList.addAll(classList);
+		while(classList.size()!=0){
+			String thisClass = classList.removeFirst();
+			List<String> thisClassList = getClassFor(thisClass);
+			for(String className : thisClassList){
+				if(!finalList.contains(className)){
+					classList.add(className);
+					finalList.add(className);
+				}
+			}
+		}
+		return finalList;
+	}	
 }
 
