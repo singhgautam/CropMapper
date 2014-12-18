@@ -8,10 +8,12 @@ public class App
 {
     public static void main( String[] args )
     {
-        Sparql enDBpedia = new Sparql("http://ko.dbpedia.org/sparql");
-        String predicateURI = "http://ko.dbpedia.org/property/작곡";
-        String resourceURI = "http://ko.dbpedia.org/resource/Stratovarius";
+        Sparql enDBpedia = new Sparql("http://dbpedia.org/sparql");
         
+        //String predicateURI = "http://ko.dbpedia.org/property/작곡";
+        //String resourceURI = "http://ko.dbpedia.org/resource/Stratovarius";
+        
+        /*
         //Test :: predicateToSubjectObject()
         Map<String, String> outMap = enDBpedia.predicateToSubjectObject(predicateURI);
         for(Entry<String, String> thisEntry : outMap.entrySet()){
@@ -31,5 +33,9 @@ public class App
         for(String thisClass : classList){
         	System.out.println(thisClass);
         }
+        */
+        
+        //Test: probPropGProp()
+        System.out.println(enDBpedia.probPropGProp("http://dbpedia.org/ontology/deathPlace", "http://dbpedia.org/ontology/birthPlace"));
     }
 }

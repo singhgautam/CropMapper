@@ -12,6 +12,7 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 
 public class Sparql {
 
@@ -92,6 +93,41 @@ public class Sparql {
 			}
 		}
 		return finalList;
-	}	
+	}
+	
+	double probPropGProp(String p1, String p2){
+		int C_12 = 0; int C_2 = 0;
+		String qString = 
+				"SELECT (COUNT(?S) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S <"+p1+"> ?O ."+
+				"?S <"+p2+"> ?O ."+
+				"} ";
+		Query q = QueryFactory.create(PREFIX+qString);
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q);
+		ResultSet qResults = qExecution.execSelect();
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal C_12_literal = ((Literal) thisRow.get("C"));
+			C_12 = C_12_literal.getInt();
+		}
+		qExecution.close();
+		qString = 
+				"SELECT (COUNT(?S) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S <"+p2+"> ?O ."+
+				"} ";
+		q = QueryFactory.create(PREFIX+qString);
+		qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q);
+		qResults = qExecution.execSelect();
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal C_2_literal = ((Literal) thisRow.get("C"));
+			C_2 = C_2_literal.getInt();
+		}
+		return ((double) C_12)/C_2;
+	}
 }
 
