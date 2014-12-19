@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -129,5 +131,33 @@ public class Sparql {
 		}
 		return ((double) C_12)/C_2;
 	}
+	
+	Map<String, Double> allPropGProp(String p){
+		int C_2 = 0;
+		Map<String, Double> probMap = new TreeMap<String, Double>();
+		String qString = 
+				"SELECT ?P (COUNT(?S) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S ?P ?O . "+
+				"?S <"+p+"> ?O ."+
+				"} GROUP BY ?P ORDER BY DESC(?C) LIMIT 1000";
+		Query q = QueryFactory.create(PREFIX+qString);
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q);
+		ResultSet qResults = qExecution.execSelect();
+		while(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			int thisC = literal.getInt();
+			String thisP = thisRow.get("P").toString();
+			if(thisP.equalsIgnoreCase(p)){
+				C_2 = thisC;
+			}else{
+				probMap.put(thisP, ((double) thisC)/C_2);
+			}
+		}
+		return probMap;		
+	}
+	
+	
 }
-

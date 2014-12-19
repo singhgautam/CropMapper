@@ -9,9 +9,13 @@ public class App
     public static void main( String[] args )
     {
         Sparql enDBpedia = new Sparql("http://dbpedia.org/sparql");
+        Experiments koDBpedia = new Experiments("http://ko.dbpedia.org/sparql");
         
-        //String predicateURI = "http://ko.dbpedia.org/property/작곡";
-        //String resourceURI = "http://ko.dbpedia.org/resource/Stratovarius";
+        String predicateURI = "http://ko.dbpedia.org/property/제작";
+        Map<String, Integer> domainRangeMap = koDBpedia.predicateToDomainRange(predicateURI);
+        for(Entry<String, Integer> thisEntry: domainRangeMap.entrySet()){
+        	System.out.println(thisEntry);
+        }
         
         /*
         //Test :: predicateToSubjectObject()
@@ -21,21 +25,31 @@ public class App
         }
         System.out.println("--");
         
+        
         //Test :: getAllClassFor()
-        List<String> classList = enDBpedia.getAllClassFor(resourceURI);
+        String resourceURI = "http://ko.dbpedia.org/resource/아메아토";
+        List<String> classList = koDBpedia.getAllClassFor(resourceURI);
         for(String thisClass : classList){
         	System.out.println(thisClass);
         }
         System.out.println("--");
         
+       
         //Test :: getClassFor()
-        classList = enDBpedia.getClassFor(resourceURI);
+        List<String> classList = enDBpedia.getClassFor("http://dbpedia.org/ontology/Airline");
         for(String thisClass : classList){
-        	System.out.println(thisClass);
+        	//System.out.println(thisClass);
         }
-        */
+        
         
         //Test: probPropGProp()
-        System.out.println(enDBpedia.probPropGProp("http://dbpedia.org/ontology/deathPlace", "http://dbpedia.org/ontology/birthPlace"));
+        //System.out.println(enDBpedia.probPropGProp("http://dbpedia.org/ontology/deathPlace", "http://dbpedia.org/ontology/birthPlace"));
+        
+        //Test: allPropGProp()
+        for(Entry<String, Double> thisEntry : enDBpedia.allPropGProp("http://dbpedia.org/property/color").entrySet()){
+        	//System.out.println(thisEntry.getValue()+", ");
+        	System.out.println(thisEntry);
+        }
+        */
     }
 }
