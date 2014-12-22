@@ -8,20 +8,21 @@ public class App
 {
     public static void main( String[] args )
     {
-        Sparql enDBpedia = new Sparql("http://127.0.0.1:8890/sparql");
-        Experiments koDBpedia = new Experiments("http://127.0.0.1:8890/sparql");
+        Experiments dbpedia = new Experiments("http://127.0.0.1:8890/sparql");
 //        String predicateURI = "http://ko.dbpedia.org/property/제작";
 //        Map<String, Integer> domainRangeMap = koDBpedia.predicateToDomainRange(predicateURI);
 //        for(Entry<String, Integer> thisEntry: domainRangeMap.entrySet()){
 //        	System.out.println(thisEntry);
 //        }
         
-        String predicateURI = "http://ko.dbpedia.org/property/제작";
-        Map<String, Integer> domainRangeTargetMap = koDBpedia.predicateToTargetDomainRange(predicateURI,"http://127.0.0.1:8890/sparql");
-        for(Entry<String, Integer> thisEntry: domainRangeTargetMap.entrySet()){
-        	System.out.println(thisEntry);
-        }
+//        String predicateURI = "http://ko.dbpedia.org/property/제작";
+//        Map<String, Integer> domainRangeTargetMap = koDBpedia.predicateToTargetDomainRange(predicateURI,"http://127.0.0.1:8890/sparql");
+//        for(Entry<String, Integer> thisEntry: domainRangeTargetMap.entrySet()){
+//        	System.out.println(thisEntry);
+//        }
 //        
+        System.out.println(dbpedia.ProbPropGDomRan("http://ko.dbpedia.org/property/제작","http://dbpedia.org/ontology/Film" , "http://dbpedia.org/ontology/Agent", "http://ko.dbpedia.org"));
+        
         /*
         //Test :: predicateToSubjectObject()
         Map<String, String> outMap = enDBpedia.predicateToSubjectObject(predicateURI);

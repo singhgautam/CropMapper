@@ -129,6 +129,7 @@ public class Sparql {
 			Literal C_2_literal = ((Literal) thisRow.get("C"));
 			C_2 = C_2_literal.getInt();
 		}
+		qExecution.close();
 		return ((double) C_12)/C_2;
 	}
 	
@@ -156,8 +157,46 @@ public class Sparql {
 				probMap.put(thisP, ((double) thisC)/C_2);
 			}
 		}
+		qExecution.close();
 		return probMap;		
 	}
 	
+	Double ProbPropGDomRan(String p, String dom, String ran, String g){
+		String qString = 
+				"SELECT (COUNT(?S) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S rdf:type <"+dom+"> . "+
+				"?O rdf:type <"+ran+"> . "+
+				"?S <"+p+"> ?O . "+
+				"} ";
+		Query q = QueryFactory.create(PREFIX+qString);
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q);
+		ResultSet qResults = qExecution.execSelect();
+		Integer numPDR = 0; 
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			numPDR = literal.getInt();
+		}
+		qString = 
+				"SELECT (COUNT(?S) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S rdf:type <"+dom+"> . "+
+				"?O rdf:type <"+ran+"> . "+
+				"?S ?P ?O . "+
+				"} ";
+		q = QueryFactory.create(PREFIX+qString);
+		qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q);
+		qResults = qExecution.execSelect();
+		Integer numDR = 1;
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			numDR = literal.getInt();
+		}
+		return (numPDR*1.0)/numDR;
+	}
 	
 }
