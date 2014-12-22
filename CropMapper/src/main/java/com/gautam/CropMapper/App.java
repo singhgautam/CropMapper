@@ -8,15 +8,20 @@ public class App
 {
     public static void main( String[] args )
     {
-        Sparql enDBpedia = new Sparql("http://dbpedia.org/sparql");
-        Experiments koDBpedia = new Experiments("http://ko.dbpedia.org/sparql");
+        Sparql enDBpedia = new Sparql("http://127.0.0.1:8890/sparql");
+        Experiments koDBpedia = new Experiments("http://127.0.0.1:8890/sparql");
+//        String predicateURI = "http://ko.dbpedia.org/property/제작";
+//        Map<String, Integer> domainRangeMap = koDBpedia.predicateToDomainRange(predicateURI);
+//        for(Entry<String, Integer> thisEntry: domainRangeMap.entrySet()){
+//        	System.out.println(thisEntry);
+//        }
         
         String predicateURI = "http://ko.dbpedia.org/property/제작";
-        Map<String, Integer> domainRangeMap = koDBpedia.predicateToDomainRange(predicateURI);
-        for(Entry<String, Integer> thisEntry: domainRangeMap.entrySet()){
+        Map<String, Integer> domainRangeTargetMap = koDBpedia.predicateToTargetDomainRange(predicateURI,"http://127.0.0.1:8890/sparql");
+        for(Entry<String, Integer> thisEntry: domainRangeTargetMap.entrySet()){
         	System.out.println(thisEntry);
         }
-        
+//        
         /*
         //Test :: predicateToSubjectObject()
         Map<String, String> outMap = enDBpedia.predicateToSubjectObject(predicateURI);
