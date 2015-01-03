@@ -1,5 +1,8 @@
 package com.gautam.CropMapper;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -161,7 +164,7 @@ public class Sparql {
 		return probMap;		
 	}
 	
-	Double ProbPropGDomRan(String p, String dom, String ran, String g){
+	Double probPropGDomRan(String p, String dom, String ran, String g){
 		String qString = 
 				"SELECT (COUNT(?S) AS ?C) "+
 				"WHERE "+
@@ -197,6 +200,138 @@ public class Sparql {
 			numDR = literal.getInt();
 		}
 		return (numPDR*1.0)/numDR;
+	}
+	
+	Double probPropGDom(String p, String dom, String g){
+		String qString = 
+				"SELECT (COUNT(?S) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S rdf:type <"+dom+"> . "+
+				"?S <"+p+"> ?O . "+
+				"} ";
+		Query q = QueryFactory.create(PREFIX+qString);
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q, g);
+		ResultSet qResults = qExecution.execSelect();
+		Integer numPDR = 0; 
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			numPDR = literal.getInt();
+		}
+		qExecution.close();
+		qString = 
+				"SELECT (COUNT(?S) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S rdf:type <"+dom+"> . "+
+				"?S ?P ?O . "+
+				"} ";
+		q = QueryFactory.create(PREFIX+qString);
+		qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q, g);
+		qResults = qExecution.execSelect();
+		Integer numDR = 1;
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			numDR = literal.getInt();
+		}
+		qExecution.close();
+		return (numPDR*1.0)/numDR;
+	}
+	
+	Double probPropGRan(String p, String ran, String g){
+		String qString = 
+				"SELECT (COUNT(?O) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?O rdf:type <"+ran+"> . "+
+				"?S <"+p+"> ?O . "+
+				"} ";
+		Query q = QueryFactory.create(PREFIX+qString);
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q, g);
+		ResultSet qResults = qExecution.execSelect();
+		Integer numPDR = 0; 
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			numPDR = literal.getInt();
+		}
+		qExecution.close();
+		qString = 
+				"SELECT (COUNT(?O) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?O rdf:type <"+ran+"> . "+
+				"?S ?P ?O . "+
+				"} ";
+		q = QueryFactory.create(PREFIX+qString);
+		qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q, g);
+		qResults = qExecution.execSelect();
+		Integer numDR = 1;
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			numDR = literal.getInt();
+		}
+		qExecution.close();
+		return (numPDR*1.0)/numDR;
+	}
+	
+	Double valueTypePropScore(String p, String graph){
+		String qString = 
+				"SELECT (COUNT(?O) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S <"+p+"> ?O . "+
+				"FILTER(isLiteral(?O)) . "+
+				"FILTER(datatype(?O) != xsd:string) . "+
+				"} ";
+		Query q = QueryFactory.create(PREFIX+qString);
+		QueryExecution qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q, graph);
+		ResultSet qResults = qExecution.execSelect();
+		Integer numVals = 0; 
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			numVals = literal.getInt();
+		}
+		qString = 
+				"SELECT (COUNT(?O) AS ?C) "+
+				"WHERE "+
+				"{ "+
+				"?S <"+p+"> ?O . "+
+				"} ";
+		q = QueryFactory.create(PREFIX+qString);
+		qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q, graph);
+		qResults = qExecution.execSelect();
+		Integer numAll = 1;
+		if(qResults.hasNext()){
+			QuerySolution thisRow = qResults.next();
+			Literal literal = ((Literal) thisRow.get("C"));
+			numAll = literal.getInt();
+		}
+		qExecution.close();
+		return (numVals*1.0)/numAll;
+	}
+	
+	List<String> getKoreanObjectPropertyListFromFile(String file, Integer limit) throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String thisProperty;
+		List<String> out = new ArrayList<String>();
+		int c = 0;
+		while((thisProperty = br.readLine())!=null && c != limit){
+			if(thisProperty.split("/")[thisProperty.split("/").length-1].replaceAll("[A-Za-z0-9]+", "").length()==0) continue;
+			if(valueTypePropScore(thisProperty, "http://ko.dbpedia.org") > 0.25) continue;
+			out.add(thisProperty);
+			c++;
+		}
+		return out;
+	}
+	
+	boolean isKoreanProperty(String thisProperty){
+		if(thisProperty.split("/")[thisProperty.split("/").length-1].replaceAll("[A-Za-z0-9]+", "").length()==0) return false;
+		else return true;
 	}
 	
 }
