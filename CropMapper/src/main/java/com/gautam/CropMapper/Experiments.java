@@ -210,7 +210,7 @@ public class Experiments extends Sparql {
 		return out;
 	}
 	
-	Map<String,Double> predicateToTargetDomainRangeWeightedTop5(String p, String te){
+	Map<String,Double> predicateToTargetDomainRangeWeightedTop10(String p, String te){
 		Map<String, Double> out_pre = new HashMap<String, Double>();
 		Sparql tEndpoint = new Sparql(te);
 		String qString = 
@@ -294,14 +294,14 @@ public class Experiments extends Sparql {
 		}
 		qExecution.close();
 		Map<String, Double> out_sort = Algorithms.sort(out_pre);
-		Map<String, Double> out_5 = new LinkedHashMap<String, Double>();
+		Map<String, Double> out_10 = new LinkedHashMap<String, Double>();
 		int c = 0;
 		for(Entry<String, Double> thisEntry : out_sort.entrySet()){
-			if(c >= 5) break;
-			out_5.put(thisEntry.getKey(), thisEntry.getValue());
+			if(c >= 10) break;
+			out_10.put(thisEntry.getKey(), thisEntry.getValue());
 			c++;
 		}
-		return (Map<String, Double>) out_5;
+		return (Map<String, Double>) out_10;
 	}
 	
 	List<String> getKoreanPropertyListFromFile(String file, Integer limit) throws IOException{
