@@ -204,7 +204,7 @@ public class Sparql {
 	
 	Double probPropGDom(String p, String dom, String g){
 		String qString = 
-				"SELECT (COUNT(?S) AS ?C) "+
+				"SELECT (COUNT(DISTINCT ?S) AS ?C) "+
 				"WHERE "+
 				"{ "+
 				"?S rdf:type <"+dom+"> . "+
@@ -221,11 +221,11 @@ public class Sparql {
 		}
 		qExecution.close();
 		qString = 
-				"SELECT (COUNT(?S) AS ?C) "+
+				"SELECT (COUNT(DISTINCT ?S) AS ?C) "+
 				"WHERE "+
 				"{ "+
 				"?S rdf:type <"+dom+"> . "+
-				"?S ?P ?O . "+
+				//"?S ?P ?O . "+
 				"} ";
 		q = QueryFactory.create(PREFIX+qString);
 		qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q, g);
@@ -242,7 +242,7 @@ public class Sparql {
 	
 	Double probPropGRan(String p, String ran, String g){
 		String qString = 
-				"SELECT (COUNT(?O) AS ?C) "+
+				"SELECT (COUNT(DISTINCT ?O) AS ?C) "+
 				"WHERE "+
 				"{ "+
 				"?O rdf:type <"+ran+"> . "+
@@ -259,11 +259,11 @@ public class Sparql {
 		}
 		qExecution.close();
 		qString = 
-				"SELECT (COUNT(?O) AS ?C) "+
+				"SELECT (COUNT(DISTINCT ?O) AS ?C) "+
 				"WHERE "+
 				"{ "+
 				"?O rdf:type <"+ran+"> . "+
-				"?S ?P ?O . "+
+				//"?S ?P ?O . "+
 				"} ";
 		q = QueryFactory.create(PREFIX+qString);
 		qExecution = QueryExecutionFactory.sparqlService(ENDPOINT, q, g);

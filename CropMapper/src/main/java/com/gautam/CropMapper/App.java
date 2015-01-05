@@ -11,18 +11,18 @@ public class App
     {
     	
         Experiments dbpedia = new Experiments("http://127.0.0.1:8890/sparql");
-        /*
+        
         System.out.println("KOREAN PROPERTY, LIKELY DOMAIN, LIKELY RANGE, LIKELY ENGLISH PROPERTY, SCORE");
         try {
 			List<String> allKP = dbpedia.getKoreanObjectPropertyListFromFile("/home/gautam/Research/Predicate_Mapping/Data/property_list_clean.csv", 100);
 			int count = 0;
 			for(String thisKP : allKP){
-				if(count < 15) {
+				if(count < 40) {
 					count++;
 					continue;
 				}
 				System.out.println(thisKP+",-,-,-,-");
-				Map<String, Double> domainRangeTargetMap = dbpedia.predicateToTargetDomainRangeWeightedTop10(thisKP,"http://127.0.0.1:8890/sparql");
+				Map<String, Double> domainRangeTargetMap = dbpedia.predicateToTargetDomainRangeWeightedTwiceTop10(thisKP,"http://127.0.0.1:8890/sparql");
 		        for(Entry<String, Double> thisEntry: domainRangeTargetMap.entrySet()){
 		        	System.out.println("-,"+thisEntry.getKey().replaceAll("<", "").replaceAll(">", ",")+thisEntry.getValue());
 		        }
@@ -58,7 +58,7 @@ public class App
         	System.out.println(thisEntry);
         }
         
-        */
+        /*
         String predicateURI = "http://ko.dbpedia.org/property/출연자";
         Map<String, Double> domainRangeTargetMap = dbpedia.predicateToTargetDomainRangeWeighted(predicateURI,"http://127.0.0.1:8890/sparql");
         for(Entry<String, Double> thisEntry: domainRangeTargetMap.entrySet()){
